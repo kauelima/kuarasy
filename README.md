@@ -6,7 +6,7 @@
 
 <p align="center">
   A small macOS menu bar app for working across time zones.<br>
-  <em>Kuarasy</em> is the Guarani word for the sun.
+  <em>Kuarasy</em> is the Tupi-Guarani word for the sun.
 </p>
 
 <p align="center">
@@ -141,3 +141,5 @@ The Xcode project uses synchronized folders, so any file added under `Kuarasy/` 
 ---
 
 <p align="center"><sub>Kuarasy was developed by Kaue Lima (<a href="https://kauelima.com">kauelima.com</a>) with the aid of artificial intelligence.</sub></p>
+
+<p align="center"><sub>It started as a replacement for <a href="https://hovrly.com/">Hovrly</a>, which I used before. Hovrly seems to have been abandoned for a while and had some recent commits I don't support, so I set out to modernize it and add the features it was missing for my own use.</sub></p>
