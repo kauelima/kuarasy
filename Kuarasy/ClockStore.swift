@@ -15,6 +15,21 @@ final class ClockStore {
     /// reliably host a `TimelineView`).
     private(set) var now = Date()
 
+    #if DEBUG
+    /// Debug preview only (`--now`): a fixed time for the panel, so screenshots can show
+    /// a weekday whatever day it really is.
+    var debugNow: Date?
+    #endif
+
+    /// The current time as the panel shows it.
+    func liveDate(_ date: Date = Date()) -> Date {
+        #if DEBUG
+        debugNow ?? date
+        #else
+        date
+        #endif
+    }
+
     private let defaults: UserDefaults
     private static let locationsKey = "kuarasy.v1.locations"
     private static let settingsKey = "kuarasy.v1.settings"
@@ -160,7 +175,7 @@ final class ClockStore {
 
     /// Moves the scrubbed time, staying within today (in your zone) and on slot boundaries.
     func shift(by interval: TimeInterval) {
-        let live = Date()
+        let live = liveDate()
         let today = TimeMath.day(containing: live, in: homeTimeZone)
         let base = selectedDate ?? TimeMath.snap(live, in: today)
         let target = base.addingTimeInterval(interval)

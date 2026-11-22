@@ -29,8 +29,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     #if DEBUG
-    /// `--preview [list|add|settings|edit] [--scrub]` opens the popover content in a normal
-    /// window, so it can be inspected and screenshotted without clicking the menu bar.
+    /// `--preview [list|add|settings|edit] [--demo] [--now "yyyy-MM-dd HH:mm"] [--scrub]`
+    /// opens the popover content in a normal window, so it can be inspected and
+    /// screenshotted without clicking the menu bar. `--now` fixes the panel's clock at a
+    /// time in your time zone, `--scrub` moves the bar to 15:00 on that day.
     private func openPreviewWindowIfRequested() {
         let args = ProcessInfo.processInfo.arguments
         guard let i = args.firstIndex(of: "--preview") else { return }
@@ -44,8 +46,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         case "edit": store.locations.first.map { .edit($0.id) } ?? .list
         default: .list
         }
+        if let j = args.firstIndex(of: "--now"), j + 1 < args.count {
+            let parser = DateFormatter()
+            parser.locale = Locale(identifier: "en_US_POSIX")
+            parser.timeZone = store.homeTimeZone
+            parser.dateFormat = "yyyy-MM-dd HH:mm"
+            store.debugNow = parser.date(from: args[j + 1])
+        }
         if args.contains("--scrub") {
-            let day = TimeMath.day(containing: Date(), in: store.homeTimeZone)
+            let day = TimeMath.day(containing: store.liveDate(), in: store.homeTimeZone)
             store.selectedDate = day.start.addingTimeInterval(15 * 3600)
         }
         let host = NSHostingView(rootView: PopoverView(initialRoute: route).environment(store))
@@ -56,7 +65,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window.title = "Kuarasy Preview"
         window.contentView = host
         window.setContentSize(host.fittingSize)
-        window.setFrameTopLeftPoint(NSPoint(x: 80, y: (NSScreen.main?.visibleFrame.maxY ?? 900) - 40))
+        // The sharpest screen, so screenshots come out at Retina resolution when one is attached.
+        let screen = NSScreen.screens.max { $0.backingScaleFactor < $1.backingScaleFactor } ?? NSScreen.main
+        let visible = screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
+        window.setFrameTopLeftPoint(NSPoint(x: visible.minX + 80, y: visible.maxY - 40))
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         previewWindow = window

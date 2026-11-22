@@ -58,13 +58,14 @@ struct ClockListPanel: View {
 
     var body: some View {
         TimelineView(.everyMinute) { context in
-            let date = store.displayDate(live: context.date)
+            let live = store.liveDate(context.date)
+            let date = store.displayDate(live: live)
             VStack(spacing: 10) {
                 header
                 LocationRow(location: store.homeLocation, isHome: true, date: date, route: $route)
                 countedList(date: date)
                     .zIndex(isDragging(counted: true) ? 1 : 0)
-                OverlapBar(date: date, live: context.date)
+                OverlapBar(date: date, live: live)
                 referenceList(date: date)
                     .zIndex(isDragging(counted: false) ? 1 : 0)
             }

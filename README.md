@@ -1,68 +1,71 @@
-# Kuarasy
+<p align="center">
+  <img src="docs/icon.png" width="128" height="128" alt="Kuarasy app icon">
+</p>
 
-A small macOS menu bar app for working across time zones. *Kuarasy* is the Guarani word for the sun.
+<h1 align="center">Kuarasy</h1>
+
+<p align="center">
+  A small macOS menu bar app for working across time zones.<br>
+  <em>Kuarasy</em> is the Guarani word for the sun.
+</p>
+
+<p align="center">
+  <a href="https://github.com/kauelima/kuarasy/releases/latest"><strong>Download the latest release</strong></a><br>
+  macOS 14 or newer, Apple Silicon and Intel
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/panel-dark.png">
+    <img src="docs/screenshots/panel-light.png" width="49%" alt="Kuarasy at 11:00 in São Paulo: São Paulo and New York are working, Los Angeles is asleep, and the bar shows 14:00 to 18:00 as the shared working window">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/scrub-dark.png">
+    <img src="docs/screenshots/scrub-light.png" width="49%" alt="The bar dragged to 15:00: New York reads 13:00 and Los Angeles 10:00, everyone is working">
+  </picture>
+</p>
 
 It answers two questions:
 
-1. **When is a good time to meet?** The bar across your day is green where everyone is in working hours, yellow where nobody is asleep, and red where someone is.
-2. **What time is that for me?** Drag the bar's knob until a coworker's row reads the time they mentioned ("11am EST"), and your row shows your local time.
-
-Kuarasy lives in the menu bar (look for the sun) and has no Dock icon.
-
-## Requirements
-
-- macOS 14 or newer, on Apple Silicon or Intel.
-- Liquid Glass appears on macOS 26 and later. Older systems get a translucent material instead.
+1. **When is a good time to meet?** The bar across your day is green where everyone is in working hours, yellow where nobody is asleep, and red where someone is. At 11:00 in São Paulo (left), Los Angeles is still asleep, and the shared window is 14:00 to 18:00.
+2. **What time is that for me?** Drag the bar until a coworker's row reads the time they mentioned ("11am EST"), and your row shows what that is for you. Dragged to 15:00 (right), it's 13:00 in New York and 10:00 in Los Angeles.
 
 ## Install
 
-### Download a build
-
 1. Download `Kuarasy-<version>.dmg` from the [latest release](https://github.com/kauelima/kuarasy/releases/latest).
-2. Open the DMG and drag **Kuarasy** into **Applications**.
-3. Open Kuarasy from Applications.
+2. Open it and drag **Kuarasy** into **Applications**.
+3. Open Kuarasy. It lives in the menu bar (look for the sun) and has no Dock icon.
 
-Builds aren't signed with an Apple Developer ID, so macOS blocks the first launch with a message that Apple can't check the app for malicious software. To allow it:
+> [!NOTE]
+> Kuarasy isn't signed with an Apple Developer ID, so macOS blocks it the first time. Try to open it once, then go to **System Settings > Privacy & Security** and click **Open Anyway** next to the Kuarasy message. macOS remembers the choice.
+>
+> Or remove the block from the terminal: `xattr -dr com.apple.quarantine /Applications/Kuarasy.app`
 
-1. Try to open Kuarasy once and dismiss the warning.
-2. Go to **System Settings > Privacy & Security**, scroll to the Security section and click **Open Anyway** next to the Kuarasy message.
-3. Confirm with your password. macOS remembers the choice, so later launches open normally.
+## Using it
 
-Or remove the download flag from the terminal:
+- **Add a location** with **+**. Search by city, abbreviation (`EST`, `BRT`) or offset (`+5:30`), and give it a label such as "Design Team" if you like.
+- **Rows above the bar** count toward it. **Rows below** are reference clocks: they follow the bar's time but don't change its colours. Drag rows to reorder them, or across the bar to switch sides.
+- **Hover a row** for its **⋯** menu: show it in the menu bar, count it toward the bar or not, edit, remove.
+- **Move through the day** by dragging the bar or with **‹ ›** (30 minutes at a time). **Now** goes back to the live time. The green range at the top right is today's longest shared working window: click it to jump there.
+- **Settings** (the gear): your time zone, 12 or 24-hour time, open at login, what the menu bar shows, working days and hours, sleeping hours, and Quit.
 
-```sh
-xattr -dr com.apple.quarantine /Applications/Kuarasy.app
-```
+## Contributing
 
-### Build from source
+Kuarasy was built to solve a problem of my own, and I already use it every day. Other people will have other needs, and that's where you come in: the best way to help is to join the [Discussions](https://github.com/kauelima/kuarasy/discussions). Ask for a feature, tell me how you'd use it, or talk about what it could do next.
 
-Needs Xcode 26 or newer.
+Some ideas are already on the list in [FUTURE.md](FUTURE.md).
+
+## Development
+
+Building needs Xcode 26 or newer.
 
 ```sh
 git clone https://github.com/kauelima/kuarasy.git
 cd kuarasy
-xcodebuild -project Kuarasy.xcodeproj -scheme Kuarasy -configuration Release \
-  -derivedDataPath build -destination 'generic/platform=macOS' build
-cp -R build/Build/Products/Release/Kuarasy.app /Applications/
-```
-
-This builds a universal app (Apple Silicon and Intel). Apps built on your own Mac aren't flagged as downloads, so it opens without the security prompt.
-
-## Using it
-
-- **+** adds a location. Search by city, abbreviation (`EST`, `BRT`) or offset (`+5:30`). After picking one you can give it a label such as "Design Team".
-- Rows above the bar count toward it. Rows below it are compact reference clocks: they follow the bar's time but don't change its colours. Drag rows to reorder them, or drag a row across the bar to switch it.
-- Hover a row for the **⋯** menu: show in menu bar, count or stop counting toward the bar, edit, remove.
-- Under the bar, **‹ ›** move 30 minutes within today and **Now** returns to live time. The green range at the top right is today's longest shared working window. Click it to jump there.
-- **Settings** (gear, top right): your own time zone, 12h or 24h time, open at login, what the menu bar shows, working days and hours, sleeping hours, and Quit.
-
-## Development
-
-Open `Kuarasy.xcodeproj` and press ⌘R, or build and launch from the terminal:
-
-```sh
 Scripts/run.sh
 ```
+
+`Scripts/run.sh` builds a Debug copy and launches it, quitting any Kuarasy that's already running. You can also open `Kuarasy.xcodeproj` and press ⌘R.
 
 Run the tests:
 
@@ -70,16 +73,29 @@ Run the tests:
 xcodebuild -project Kuarasy.xcodeproj -scheme Kuarasy -destination 'platform=macOS' test
 ```
 
-### Preview window
-
-Debug builds accept `--preview <list|add|edit|settings>` to open the popover content in a normal window, which is easier to inspect and screenshot than the menu bar popover. Two optional flags go with it:
-
-- `--demo` uses sample locations and leaves your saved ones alone.
-- `--scrub` moves the bar to 15:00 today instead of the live time.
+### Install your own build
 
 ```sh
-Scripts/run.sh --preview settings --demo
+xcodebuild -project Kuarasy.xcodeproj -scheme Kuarasy -configuration Release \
+  -derivedDataPath build -destination 'generic/platform=macOS' build
+cp -R build/Build/Products/Release/Kuarasy.app /Applications/
 ```
+
+This makes a universal app (Apple Silicon and Intel). Apps you build yourself aren't flagged as downloads, so it opens without the security prompt.
+
+### Preview window
+
+Debug builds accept `--preview <list|add|edit|settings>` to open the panel in a normal window, which is easier to inspect and screenshot than the menu bar popover. It opens on your sharpest screen, so screenshots come out at Retina resolution when one is attached. Optional flags:
+
+- `--demo` uses sample locations and leaves your saved ones alone.
+- `--now "2026-11-24 11:00"` fixes the clock at that time in your time zone, so screenshots can show a weekday on any day.
+- `--scrub` moves the bar to 15:00 on that day.
+
+```sh
+Scripts/run.sh --preview list --demo --now "2026-11-24 11:00"
+```
+
+The screenshots in this README were taken this way, in Dark mode and again in Light mode (add `-NSRequiresAquaSystemAppearance YES` to force it), with the title bar cropped off.
 
 ### Releasing
 
@@ -117,10 +133,11 @@ Scripts/
   run.sh                  Debug build and launch
   make-dmg.sh             Release build packaged as a DMG
   dmg/                    DMG window background and the script that draws it
+docs/                     README icon and screenshots
 ```
 
 The Xcode project uses synchronized folders, so any file added under `Kuarasy/` or `KuarasyTests/` is built automatically.
 
-## Roadmap
+---
 
-See [FUTURE.md](FUTURE.md) for what's planned next.
+<p align="center"><sub>Kuarasy was developed by Kaue Lima (<a href="https://kauelima.com">kauelima.com</a>) with the aid of artificial intelligence.</sub></p>
