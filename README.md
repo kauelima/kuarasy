@@ -81,6 +81,24 @@ Debug builds accept `--preview <list|add|edit|settings>` to open the popover con
 Scripts/run.sh --preview settings --demo
 ```
 
+### Releasing
+
+Bump `MARKETING_VERSION` in the Xcode project, then build the disk image:
+
+```sh
+Scripts/make-dmg.sh
+```
+
+This makes a universal Release build and packages it as `dist/Kuarasy-<version>.dmg`, with the app on the left, an Applications shortcut on the right and a day-to-night sky behind them. Finder lays out the window, so the DMG window opens and closes on its own while the script runs, and the first run asks to let your terminal control Finder.
+
+Publish it as a GitHub release (the script prints this command with the right version):
+
+```sh
+gh release create v0.1.0 dist/Kuarasy-0.1.0.dmg --title "Kuarasy 0.1.0"
+```
+
+The background is drawn by `Scripts/dmg/background.swift`. After changing it, run `swift Scripts/dmg/background.swift` to regenerate the images.
+
 ### Project layout
 
 ```
@@ -93,8 +111,12 @@ Kuarasy/
   TimeFormat.swift        display formatting
   LaunchAtLogin.swift     SMAppService wrapper
   Views/                  SwiftUI panels and the glass helpers
+  AppIcon.icon            app icon, editable in Icon Composer
 KuarasyTests/             Swift Testing suites for TimeMath, the catalog and ClockStore
-Scripts/run.sh            Debug build and launch
+Scripts/
+  run.sh                  Debug build and launch
+  make-dmg.sh             Release build packaged as a DMG
+  dmg/                    DMG window background and the script that draws it
 ```
 
 The Xcode project uses synchronized folders, so any file added under `Kuarasy/` or `KuarasyTests/` is built automatically.
