@@ -20,7 +20,12 @@ struct MenuBarLabel: View {
         case .time:
             Text(time).monospacedDigit()
         case .iconAndTime:
-            Text("\(Image(systemName: symbol)) \(time)").monospacedDigit()
+            // Separate views, not an Image interpolated into Text: MenuBarExtra maps the label
+            // onto the status button's image + title, and drops inline Text image attachments.
+            HStack {
+                Image(systemName: symbol)
+                Text(time).monospacedDigit()
+            }
         }
     }
 }
