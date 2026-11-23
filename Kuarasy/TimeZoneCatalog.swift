@@ -12,13 +12,18 @@ enum TimeZoneCatalog {
 
     /// Standard and (optional) daylight abbreviation per zone. Foundation returns
     /// "GMT-3" style strings for most zones outside the US, so we keep our own map.
+    /// Checked against IANA tzdata 2026f.
     static let abbreviationMap: [String: (std: String, dst: String?)] = [
         // Americas
         "America/New_York": ("EST", "EDT"), "America/Toronto": ("EST", "EDT"),
         "America/Detroit": ("EST", "EDT"), "America/Chicago": ("CST", "CDT"),
-        "America/Winnipeg": ("CST", "CDT"), "America/Denver": ("MST", "MDT"),
-        "America/Edmonton": ("MST", "MDT"), "America/Phoenix": ("MST", nil),
-        "America/Los_Angeles": ("PST", "PDT"), "America/Vancouver": ("PST", "PDT"),
+        "America/Denver": ("MST", "MDT"), "America/Phoenix": ("MST", nil),
+        "America/Los_Angeles": ("PST", "PDT"),
+        // BC, Alberta and Manitoba dropped DST in 2026 and stay on UTC-7, -6 and -5
+        // all year. IANA calls these MST, CST and EST. Foundation (ICU) still flags
+        // them as daylight time, so they must not get a dst entry.
+        "America/Vancouver": ("MST", nil), "America/Edmonton": ("CST", nil),
+        "America/Winnipeg": ("EST", nil),
         "America/Anchorage": ("AKST", "AKDT"), "Pacific/Honolulu": ("HST", nil),
         "America/Halifax": ("AST", "ADT"), "America/St_Johns": ("NST", "NDT"),
         "America/Puerto_Rico": ("AST", nil), "America/Mexico_City": ("CST", nil),
@@ -82,9 +87,20 @@ enum TimeZoneCatalog {
         "Europe/Zurich": "Zürich",
         "America/Montreal": "Montréal",
         "Asia/Ho_Chi_Minh": "Ho Chi Minh City",
+        // Spellings from IANA's zone1970.tab and iso3166.tab.
+        "America/Argentina/Tucuman": "Tucumán",
+        "America/Bahia_Banderas": "Bahía de Banderas",
+        "Pacific/Galapagos": "Galápagos",
+        "Asia/Aqtobe": "Aqtöbe",
+        "Europe/Busingen": "Büsingen",
+        "Indian/Reunion": "Réunion",
     ]
     /// Legacy duplicates of zones that are also listed under their modern name.
-    static let hiddenIdentifiers: Set<String> = ["Asia/Katmandu", "Europe/Kiev"]
+    /// IANA's `backward` file lists these as "alternate names for the same location".
+    static let hiddenIdentifiers: Set<String> = [
+        "Asia/Katmandu", "Europe/Kiev", "America/Godthab", "Asia/Rangoon",
+        "Pacific/Ponape", "Pacific/Truk",
+    ]
 
     static func cityName(for identifier: String) -> String {
         if let override = cityOverrides[identifier] { return override }

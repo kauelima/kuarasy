@@ -47,6 +47,22 @@ struct OffsetTests {
     @Test func curatedAbbreviation() {
         #expect(TimeZoneCatalog.abbreviation(for: tz("America/Sao_Paulo"), at: Date()) == "BRT")
     }
+
+    /// BC, Alberta and Manitoba are on permanent time from 2026-11-01 (IANA 2026f).
+    @Test func canadaPermanentTime() {
+        for month in [1, 7] {
+            let d = date(2027, month, 15, 12, in: "UTC")
+            #expect(TimeZoneCatalog.zoneDescription(for: tz("America/Vancouver"), at: d) == "MST · UTC\u{2212}7")
+            #expect(TimeZoneCatalog.zoneDescription(for: tz("America/Edmonton"), at: d) == "CST · UTC\u{2212}6")
+            #expect(TimeZoneCatalog.zoneDescription(for: tz("America/Winnipeg"), at: d) == "EST · UTC\u{2212}5")
+        }
+    }
+
+    @Test func legacyAliasesHidden() {
+        let ids = Set(TimeZoneCatalog.all.map(\.id))
+        #expect(ids.contains("America/Nuuk") && !ids.contains("America/Godthab"))
+        #expect(ids.contains("Asia/Yangon") && !ids.contains("Asia/Rangoon"))
+    }
 }
 
 struct DayRelationTests {
