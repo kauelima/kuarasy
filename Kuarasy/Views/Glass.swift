@@ -1,13 +1,22 @@
 import SwiftUI
 
+/// How much of the window colour is laid inside each glass shape, under its content.
+/// `Glass` has no opacity or blur control, so this is the dial for contrast: 0 is
+/// stock Liquid Glass, higher is more solid. Dark grey in dark mode, light in light.
+private let glassBacking = Color(nsColor: .windowBackgroundColor).opacity(0.6)
+
 /// Liquid Glass on macOS 26+, translucent material on 14 and 15.
 extension View {
     @ViewBuilder
     func glassCard(cornerRadius: CGFloat = 18, tint: Color? = nil, interactive: Bool = false) -> some View {
         if #available(macOS 26.0, *) {
             let base: Glass = tint.map { Glass.regular.tint($0) } ?? .regular
-            self.glassEffect(interactive ? base.interactive() : base,
-                             in: .rect(cornerRadius: cornerRadius, style: .continuous))
+            let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+            // Tint again above the backing, or the backing hides the glass's own tint.
+            self
+                .background(tint ?? .clear, in: shape)
+                .background(glassBacking, in: shape)
+                .glassEffect(interactive ? base.interactive() : base, in: shape)
         } else {
             let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
             self
@@ -21,7 +30,10 @@ extension View {
     func glassCapsule(tint: Color? = nil, interactive: Bool = false) -> some View {
         if #available(macOS 26.0, *) {
             let base: Glass = tint.map { Glass.regular.tint($0) } ?? .regular
-            self.glassEffect(interactive ? base.interactive() : base, in: .capsule)
+            self
+                .background(tint ?? .clear, in: Capsule())
+                .background(glassBacking, in: Capsule())
+                .glassEffect(interactive ? base.interactive() : base, in: .capsule)
         } else {
             self
                 .background(.ultraThinMaterial, in: Capsule())
